@@ -184,6 +184,24 @@ public class Availity_Followup {
 		status = data.get("Final Status");
 		
 		if(status.isBlank() || status.isBlank()) {
+			try {
+				bcbs.waitFunc(bcbs.resultsTab);
+				bcbs.resultsTab.click();
+				logger.info("Clicked on results");
+			}catch(Exception e) {}
+			
+			try {
+				bcbs.waitFunc(bcbs.clearForm);
+				}catch(Exception e) {
+					for(int i=0; i<5; i++) {
+						Thread.sleep(4000);
+					try {
+							bcbs.clearForm.isDisplayed();
+						break;
+					}catch(Exception e1) {}	
+				}
+					
+				}
 			bcbs.clearForm.click();
 			  
 			SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yy");
@@ -311,9 +329,10 @@ public class Availity_Followup {
 					}catch(Exception e) {
 						for(int i=0; i<5; i++) {
 							Thread.sleep(4000);
-						if(bcbs.claimNumber.isDisplayed()) {
+						try { if(bcbs.claimNumber.isDisplayed()) {
 							break;
 						}
+						}catch(Exception e1) {}
 					}
 					}
 				
@@ -382,9 +401,16 @@ public class Availity_Followup {
 					
 				}
 				
-				
+		try {		
 				bcbs.downloadEOB(firstName, lastName, currency).click();
 				logger.info("Download EOB clicked first time");
+		}catch(Exception e) {
+			excel.setCellData(sheetName, "Claim Status", rowNum, "FINALIZED + record not found");
+			driver.close();
+			driver.switchTo().window(newTb.get(0));
+			driver.switchTo().frame("newBodyFrame");
+			throw new SkipException("Skipping this exception,record not found");
+		}
 				try {
 					bcbs.waitFunc(driver.findElement(By.xpath("//h3[contains(text(),'EOP/EOB Downloads')]")));
 				}catch(Exception e) {
