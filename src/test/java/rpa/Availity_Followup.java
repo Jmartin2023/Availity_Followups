@@ -57,7 +57,7 @@ public class Availity_Followup {
 	public static ExcelReader excel; 
 	public static String sheetName = "Sheet1";
 	int rowNum = 1;
-
+	boolean skipFlag =false;
 	WebDriver driver;
 
 	//JavascriptExecutor js;
@@ -388,17 +388,22 @@ public class Availity_Followup {
 					}catch(Exception e1) {}
 				}
 				}
-				
+				skipFlag=false;
 				try {
 					driver.findElement(By.xpath("//strong[contains(text(),\"We didn't find any remits to show\")]")).isDisplayed();
 					excel.setCellData(sheetName, "Claim Status", rowNum, "FINALIZED + We didn't find any remits to show");
+					excel.setCellData(sheetName, "Final Status", rowNum, "Check");
 					driver.close();
 					driver.switchTo().window(newTb.get(0));
 					driver.switchTo().frame("newBodyFrame");
-					throw new SkipException("Skipping this exception, We didn't find any remits to show");
+					skipFlag=true;
+				    
 					
 				}catch(Exception e) {
 					
+				}
+				if(skipFlag==true) {
+					throw new SkipException("Skipping this exception, We didn't find any remits to show");
 				}
 				
 		try {		
@@ -406,6 +411,7 @@ public class Availity_Followup {
 				logger.info("Download EOB clicked first time");
 		}catch(Exception e) {
 			excel.setCellData(sheetName, "Claim Status", rowNum, "FINALIZED + record not found");
+			excel.setCellData(sheetName, "Final Status", rowNum, "Check");
 			driver.close();
 			driver.switchTo().window(newTb.get(0));
 			driver.switchTo().frame("newBodyFrame");
