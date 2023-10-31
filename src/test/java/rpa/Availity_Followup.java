@@ -180,7 +180,7 @@ public class Availity_Followup {
 	@Test(dataProvider= "getData") 
 	public void AvailityPortal(Hashtable<String,String> data) throws InterruptedException, ParseException {
 		rowNum++;
-		
+		skipFlag=false;
 		status = data.get("Final Status");
 		
 		if(status.isBlank() || status.isBlank()) {
@@ -222,6 +222,7 @@ public class Availity_Followup {
 			System.out.println(currency);
 			logger.info("Last name is "+lastName);
 			logger.info("First name is "+firstName);
+			logger.info("DOB is "+dateofbirth);
 			
 			
 			try {
@@ -279,7 +280,16 @@ public class Availity_Followup {
 			bcbs.submitBtn.click();
 			logger.info("Clicked on Submit button");
 			
-			bcbs.waitFunc(bcbs.transactionIDLogo);
+			sel.pauseClick(bcbs.transactionIDLogo, 15);
+			Thread.sleep(5000);
+			
+			try {
+				bcbs.transactionIDLogo.isDisplayed();
+			}catch(Exception e) {
+				excel.setCellData(sheetName, "Final Status", rowNum, "Data error");
+				throw new SkipException("Skipping this exception, Data error");
+			}
+			
 			
 			try {
 				bcbs.waitFunc(driver.findElement(By.xpath("//div[1][@role='alert']/ul/li")));
@@ -287,12 +297,15 @@ public class Availity_Followup {
 				error=driver.findElement(By.xpath("//div[1][@role='alert']/ul/li")).getText();
 				bcbs.clearForm.click();
 				logger.info("Form cleared");
-			
-				excel.setCellData(sheetName, "Final Status", rowNum, error);
-				throw new SkipException("Skipping this exception, "+error);
+		
+				
 				
 			}catch(Exception e) {
 				
+			}
+			if(	skipFlag==true) {
+				excel.setCellData(sheetName, "Final Status", rowNum, error);
+				throw new SkipException("Skipping this exception, "+error);
 			}
 			driver.switchTo().defaultContent();
 			driver.switchTo().frame("newBody");
@@ -523,7 +536,7 @@ public class Availity_Followup {
 		if(status.equals("Pass")&& (ecwStatus.isBlank() || ecwStatus.isEmpty()) ) {
 			
 			sel.pauseClick(bcbs.claimLookupInputECW, 30);
-			claimNo = data.get("CLAIMS#").replace(".0", "");
+			claimNo = data.get("Claim No").replace(".0", "");
 			bcbs.claimLookupInputECW.clear();
 			bcbs.claimLookupInputECW.sendKeys(claimNo);
 			logger.info("Claim no entered as :"+ claimNo);
