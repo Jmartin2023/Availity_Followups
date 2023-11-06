@@ -297,7 +297,7 @@ public class Availity_Followup {
 				error=driver.findElement(By.xpath("//div[1][@role='alert']/ul/li")).getText();
 				bcbs.clearForm.click();
 				logger.info("Form cleared");
-				skipFlag===true;
+				skipFlag=true;
 				
 				
 			}catch(Exception e) {
