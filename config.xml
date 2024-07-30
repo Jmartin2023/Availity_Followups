@@ -5,7 +5,7 @@
 <username>jmartin245</username>
 <password>Medcare$2025</password>
 <state>Michigan</state>
-<payer>BCBS MICHIGAN AND BLUE CARE NETWORK</payer>
+<npi>BCBS MICHIGAN AND BLUE CARE NETWORK</npi>
 <excelName>BCBS MI - Availity Payer.xlsx</excelName>
 	</config>
 </configurations>
