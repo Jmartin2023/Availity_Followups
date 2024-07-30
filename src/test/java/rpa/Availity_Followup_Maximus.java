@@ -94,7 +94,7 @@ public class Availity_Followup_Maximus {
 		String url = configs.get("url"), 
 				username = configs.get("username"), 
 				state = configs.get("state"),
-			//	payer = configs.get("payer"),
+				NPI = configs.get("npi"),
 				password = configs.get("password");
 
 		excelFileName = configs.get("excelName");
@@ -276,13 +276,7 @@ public class Availity_Followup_Maximus {
 				}
 			 ///////////////////////////////////////
 			
-			if (payer.equals("CAREFIRST BLUECROSS BLUESHIELD")) {
-				NPI = "1093886798";
-				
-			}
-			else {
-				NPI="1033148523";
-			}
+			
 			bcbs.providerNpi.clear();
 			for(int i=0; i<5; i++) {
 				npivalue= bcbs.providerNpi.getAttribute("value");
