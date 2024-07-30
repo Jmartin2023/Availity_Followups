@@ -88,7 +88,7 @@ public class Availity_Followup_Maximus {
 		bcbs= new Availity_Objects(driver);
 		utility = new Utility();
 		
-		String[] params = new String[]{"url", "username", "password", "state","payer","excelName"};
+		String[] params = new String[]{"url", "username", "password", "state","npi","excelName"};
 		HashMap<String, String> configs = utility.getConfig("config.xml", params);
 
 		String url = configs.get("url"), 
