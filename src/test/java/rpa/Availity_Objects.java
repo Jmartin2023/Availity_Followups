@@ -92,6 +92,11 @@ public class Availity_Objects {
 	@FindBy(id = "providerNpi")
 	public WebElement providerNpi;
 	
+	@FindBy(id = "claimSearchButton")
+	public WebElement claimSearchButton;
+	
+	@FindBy(xpath = "//span[text()='Claim']")
+	public WebElement claimTab;
 	
 	@FindBy(xpath = "//table[@id='claimsTable']/descendant::td[contains(text(),'ADAMS, ELLERY')]/following-sibling::td[text()='MIJ892008138']/preceding-sibling::td[4]/span")
 	public WebElement claimStatus;
