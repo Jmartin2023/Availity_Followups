@@ -41,10 +41,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
-import com.vonage.client.VonageClient;
-import com.vonage.client.sms.MessageStatus;
-import com.vonage.client.sms.SmsSubmissionResponse;
-import com.vonage.client.sms.messages.TextMessage;
+
 
 import objects.ExcelOperations;
 import objects.SeleniumUtils;
