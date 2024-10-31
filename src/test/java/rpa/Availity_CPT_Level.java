@@ -87,7 +87,7 @@ public class Availity_CPT_Level {
 		bcbs= new Availity_Objects(driver);
 		utility = new Utility();
 		
-		String[] params = new String[]{"url", "username", "password", "state","npi","excelName"};
+		String[] params = new String[]{"url", "username", "password", "state","npi","excelName","excelNameBackup"};
 		HashMap<String, String> configs = utility.getConfig("config.xml", params);
 
 		String url = configs.get("url"), 
