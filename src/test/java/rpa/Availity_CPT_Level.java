@@ -78,7 +78,7 @@ public class Availity_CPT_Level {
 	@BeforeTest
 	public void preRec() throws InterruptedException, SAXException, IOException, ParserConfigurationException {
 
-		excel1 = new ExcelReader(System.getProperty("user.dir")+"\\Availity_Backup-Codes.xlsx");
+	
 		sel = new SeleniumUtils(projDirPath);
 
 		driver = sel.getDriver();
@@ -96,6 +96,8 @@ public class Availity_CPT_Level {
 				password = configs.get("password");
 		NPI = configs.get("npi");
 		excelFileName = configs.get("excelName");
+		String excelBackup = configs.get("excelNameBackup");
+		excel1 = new ExcelReader(System.getProperty("user.dir")+"\\"+excelBackup);
 		System.out.println(excelFileName);
 
 		driver.get(url);
