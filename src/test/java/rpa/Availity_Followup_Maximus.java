@@ -41,12 +41,15 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
-
+import com.vonage.client.VonageClient;
+import com.vonage.client.sms.MessageStatus;
+import com.vonage.client.sms.SmsSubmissionResponse;
+import com.vonage.client.sms.messages.TextMessage;
 
 import objects.ExcelOperations;
 import objects.SeleniumUtils;
 import objects.Utility;
-import objects.ExcelReader;
+import utilities.ExcelReader;
 
 
 
@@ -54,13 +57,13 @@ import objects.ExcelReader;
 public class Availity_Followup_Maximus {
 	Logger logger = LogManager.getLogger(Availity_Followup_Maximus.class);
 
-	String projDirPath, status, claimNo ,claimNumAvaility, AvailityDOS, denialReason,DOB ,serviceDate ,firstName, lastName,memberID, maximusStatus,DOS, claimStatus,dateofbirth, npivalue, charges,currency, error, originalTab, checkNum,checkDate,paidAmount,paymentDate, receivedDate, allowedAmount, processedDate,finalizedDate;
+	String projDirPath,NPI, status, claimNo ,claimNumAvaility, AvailityDOS, denialReason,DOB ,serviceDate ,firstName, lastName,memberID, maximusStatus,DOS, claimStatus,dateofbirth, npivalue, charges,currency, error, originalTab, checkNum,checkDate,paidAmount,paymentDate, receivedDate, allowedAmount, processedDate,finalizedDate;
 	
 	SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yy");
 
 	SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 
-	public static ExcelReader excel; 
+	public static ExcelReader excel, excel1; 
 	public static String sheetName = "Sheet1";
 	int rowNum = 1;
 	boolean skipFlag =false;
@@ -77,6 +80,7 @@ public class Availity_Followup_Maximus {
 	@BeforeTest
 	public void preRec() throws InterruptedException, SAXException, IOException, ParserConfigurationException {
 
+		excel1 = new ExcelReader(System.getProperty("user.dir")+"\\Availity_Backup-Codes.xlsx");
 		sel = new SeleniumUtils(projDirPath);
 
 		driver = sel.getDriver();
@@ -91,9 +95,8 @@ public class Availity_Followup_Maximus {
 		String url = configs.get("url"), 
 				username = configs.get("username"), 
 				state = configs.get("state"),
-				NPI = configs.get("npi"),
 				password = configs.get("password");
-
+		NPI = configs.get("npi");
 		excelFileName = configs.get("excelName");
 		System.out.println(excelFileName);
 
@@ -113,7 +116,128 @@ public class Availity_Followup_Maximus {
 
 		bcbs.loginBtn.click();
 		logger.info("Click login button");
-		Thread.sleep(20000);
+		
+		Thread.sleep(5000);
+		sel.pauseClick(driver.findElement(By.xpath("//input[@id='elect-Enter a one-time use backup code-1-radio']")), 10);
+		driver.findElement(By.xpath("//input[@id='elect-Enter a one-time use backup code-1-radio']")).click();
+		logger.info("Clicked on enter backup codes");
+		
+		driver.findElement(By.xpath("//button[text()='Continue']")).click();
+		logger.info("Clicked on Continue button");
+		
+		Thread.sleep(2000);
+		sel.pauseClick(driver.findElement(By.id("code")), 10);
+		
+		String backupCode = excel1.getCellData(sheetName, "Code", 2);
+		
+		
+		driver.findElement(By.id("code")).sendKeys(backupCode);
+		System.out.println("backup code entered is " + backupCode);
+		
+		
+		driver.findElement(By.xpath("//button[text()='Continue']")).click();
+		logger.info("Clicked on Continue button");
+		
+		Thread.sleep(4000);
+		
+		driver.findElement(By.xpath("//button[text()='Continue']")).click();
+		logger.info("Clicked on Continue button");
+		
+		Thread.sleep(5000);
+		try {
+		bcbs.waitFunc(driver.findElement(By.xpath("//a[@title=\"Jim's Account\"]")));
+		driver.findElement(By.xpath("//a[@title=\"Jim's Account\"]")).click();
+		logger.info("Clicked on Jim account");
+		}catch(Exception e) {
+			
+				for(int i=0; i<5; i++) {
+					Thread.sleep(4000);
+				try{ 
+					if(driver.findElement(By.xpath("//a[@title=\"Jim's Account\"]")).isDisplayed()) 
+					{
+					bcbs.waitFunc(driver.findElement(By.xpath("//a[@title=\"Jim's Account\"]")));
+					driver.findElement(By.xpath("//a[@title=\"Jim's Account\"]")).click();
+					logger.info("Clicked on Jim account");
+					break;
+					}
+					}catch(Exception e1) {}
+			}
+		}
+		
+		
+		
+	
+		
+		Thread.sleep(1500);
+		bcbs.waitFunc(driver.findElement(By.xpath("//a[text()=\"My Account\"]")));
+		driver.findElement(By.xpath("//a[text()=\"My Account\"]")).click();
+		logger.info("Clicked on My account");
+		
+		Thread.sleep(2000);
+		driver.switchTo().frame("newBodyFrame");
+		
+		
+		
+		
+		
+		
+		try {
+			bcbs.waitFunc(driver.findElement(By.xpath("//button[@id='security']")));
+			driver.findElement(By.xpath("//button[@id='security']")).click();
+			logger.info("Clicked on security tab");
+			}catch(Exception e) {
+				
+					for(int i=0; i<5; i++) {
+						Thread.sleep(4000);
+					try{ 
+						if(driver.findElement(By.xpath("//button[@id='security']")).isDisplayed()) 
+						{
+						bcbs.waitFunc(driver.findElement(By.xpath("//button[@id='security']")));
+						driver.findElement(By.xpath("//button[@id='security']")).click();
+						logger.info("Clicked on security tab");
+						break;
+						}
+						}catch(Exception e1) {}
+				}
+			}
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		Thread.sleep(3000);
+		
+		driver.switchTo().defaultContent();
+		driver.findElement(By.id("onetrust-accept-btn-handler")).click();
+		logger.info("Clicked on Accept Cookies");
+		driver.switchTo().frame("newBodyFrame");
+		
+		bcbs.waitFunc(driver.findElement(By.xpath("//button[text()='Update 2-Step Authentication']")));
+		driver.findElement(By.xpath("//button[text()='Update 2-Step Authentication']")).click();
+		logger.info("Clicked on 2-Step Authentication");
+		
+		Thread.sleep(3000);
+		bcbs.waitFunc(driver.findElement(By.xpath("//button[text()='Show backup codes']")));
+		driver.findElement(By.xpath("//button[text()='Show backup codes']")).click();
+		logger.info("Clicked on show backup codes");
+		
+		Thread.sleep(4000);
+		bcbs.waitFunc(driver.findElements(By.xpath("//div[@class='text-center list card-body']")).get(0));
+		backupCode = driver.findElements(By.xpath("//div[@class='text-center list card-body']")).get(0).getText();
+		logger.info("Extracted backup code saved  is "+backupCode);
+		
+		excel1.setCellData(sheetName, "Codes", 2, backupCode);
+		
+		driver.switchTo().defaultContent();
+		driver.navigate().to("https://apps.availity.com/availity/web/public.elegant.login?p:lm=1695867051");
+		
+		Thread.sleep(5000);
 		try {
 		bcbs.waitFunc(bcbs.downArrowDrpDwn);
 		bcbs.downArrowDrpDwn.click();
@@ -183,7 +307,7 @@ public class Availity_Followup_Maximus {
 		skipFlag=false;
 		boolean newInterface = false;
 		status = data.get("Bot Status");
-		String NPI=null;
+		
 		if(status.isBlank() || status.isBlank()) {
 			
 			
@@ -382,12 +506,12 @@ public class Availity_Followup_Maximus {
 			if(!payer.equals("HUMANA")) {
 			
 			try {
-				bcbs.waitFunc(bcbs.claimStatus(firstName, lastName, memberID,currency));
+				bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
 				}catch(Exception e) {
 					for(int i=0; i<5; i++) {
 						Thread.sleep(4000);
 					try {
-							bcbs.claimStatus(firstName, lastName, memberID,currency).isDisplayed();
+							bcbs.claimStatus(firstName, lastName,currency).isDisplayed();
 						break;
 					}catch(Exception e1) {}	
 				}
@@ -395,7 +519,7 @@ public class Availity_Followup_Maximus {
 				}
 			
 		try {	
-			claimStatus= bcbs.claimStatus(firstName, lastName, memberID,currency).getText();
+			claimStatus= bcbs.claimStatus(firstName, lastName,currency).getText();
 		}catch(Exception e) {
 			try {
 				
@@ -477,7 +601,7 @@ public class Availity_Followup_Maximus {
 			if((claimStatus.equals("FINALIZED")|| claimStatus.equals("PAID")) && !payer.equals("HUMANA") && (newInterface==false)) {
 				
 				try {
-				bcbs.claimStatus(firstName, lastName, memberID,currency).click();
+				bcbs.claimStatus(firstName, lastName,currency).click();
 				logger.info("Clicked on the claim status");
 				}catch(Exception e) {}
 				
