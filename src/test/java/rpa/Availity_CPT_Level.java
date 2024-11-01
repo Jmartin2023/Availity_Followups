@@ -55,7 +55,7 @@ import utilities.ExcelReader;
 public class Availity_CPT_Level {
 	Logger logger = LogManager.getLogger(Availity_CPT_Level.class);
 
-	String projDirPath,NPI, status, claimNo ,claimNumAvaility, AvailityDOS, denialReason,DOB ,serviceDate ,firstName, lastName,memberID, maximusStatus,DOS, claimStatus,dateofbirth, npivalue, charges,currency, error, originalTab, checkNum,checkDate,paidAmount,paymentDate, receivedDate, allowedAmount, processedDate,finalizedDate;
+	String projDirPath,NPI, status, claimNo ,claimNumAvaility, AvailityDOS, denialReason,DOB ,serviceDate ,firstName, lastName,memberID, maximusStatus,DOSFrom, DOSTo, claimStatus,dateofbirth, npivalue, charges,currency, error, originalTab, checkNum,checkDate,paidAmount,paymentDate, receivedDate, allowedAmount, processedDate,finalizedDate;
 	
 	SimpleDateFormat parser = new SimpleDateFormat("MM/dd/yy");
 
@@ -78,7 +78,7 @@ public class Availity_CPT_Level {
 	@BeforeTest
 	public void preRec() throws InterruptedException, SAXException, IOException, ParserConfigurationException {
 
-		excel1 = new ExcelReader(System.getProperty("user.dir")+"\\Availity_Backup-Codes.xlsx");
+	
 		sel = new SeleniumUtils(projDirPath);
 
 		driver = sel.getDriver();
@@ -87,7 +87,7 @@ public class Availity_CPT_Level {
 		bcbs= new Availity_Objects(driver);
 		utility = new Utility();
 		
-		String[] params = new String[]{"url", "username", "password", "state","npi","excelName"};
+		String[] params = new String[]{"url", "username", "password", "state","npi","excelName","excelNameBackup"};
 		HashMap<String, String> configs = utility.getConfig("config.xml", params);
 
 		String url = configs.get("url"), 
@@ -96,6 +96,8 @@ public class Availity_CPT_Level {
 				password = configs.get("password");
 		NPI = configs.get("npi");
 		excelFileName = configs.get("excelName");
+		String excelBackup = configs.get("excelNameBackup");
+		excel1 = new ExcelReader(System.getProperty("user.dir")+"\\"+excelBackup);
 		System.out.println(excelFileName);
 
 		driver.get(url);
@@ -298,8 +300,8 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 		}
 	
 		bcbs.organizationInput.sendKeys("Ark"+Keys.ENTER);
-	*/	logger.info("Entered Organization: Ark Laboratory LLC");
-		
+		logger.info("Entered Organization: Ark Laboratory LLC");
+	*/	
 		
 		
 		 
@@ -325,7 +327,22 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			}catch(Exception e) {
 				
 			}
+			
 			payer= data.get("Transaction Payer");
+			
+			try {
+				bcbs.waitFunc(bcbs.payerInput);
+				}catch(Exception e) {
+					for(int i=0; i<5; i++) {
+						Thread.sleep(4000);
+					try {
+							bcbs.payerInput.isDisplayed();
+						break;
+					}catch(Exception e1) {}	
+				}
+					
+				}
+			
 			bcbs.payerInput.clear();
 			bcbs.payerInput.sendKeys(payer);
 			Thread.sleep(1000);
@@ -375,9 +392,11 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			// output format: yyyy-MM-dd
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 			DOB = data.get("Date of Birth");
-			DOS = data.get("SERVICE DATE");
+			DOSFrom = data.get("SERVICE DATE From");
+			DOSTo = data.get("SERVICE DATE To");
 			//System.out.println(formatter.format(parser.parse(DOB)) +" is date");
-			DOS= formatter.format(parser.parse(DOS));
+			DOSFrom= formatter.format(parser.parse(DOSFrom));
+			DOSTo= formatter.format(parser.parse(DOSTo));
 			dateofbirth=	formatter.format(parser.parse(DOB));
 			firstName = data.get("First Name").toUpperCase().trim();
 			lastName = data.get("Last Name").toUpperCase().trim();
@@ -469,23 +488,23 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			}
 	try {	
 			bcbs.serviceDatestart.clear();
-			bcbs.serviceDatestart.sendKeys(DOS.split("/")[0]+DOS.split("/")[1]+DOS.split("/")[2]);
+			bcbs.serviceDatestart.sendKeys(DOSFrom.split("/")[0]+DOSFrom.split("/")[1]+DOSFrom.split("/")[2]);
 		//	bcbs.serviceDatestart.sendKeys(Keys.ENTER);
-			logger.info("DOS entered as: "+ DOS);
+			logger.info("DOS From entered as: "+ DOSFrom);
 	}catch(Exception e) {
 		driver.findElement(By.id("fromDate")).clear();
-		driver.findElement(By.id("fromDate")).sendKeys(DOS.split("/")[0]+DOS.split("/")[1]+DOS.split("/")[2]);
-		logger.info("DOS entered as: "+ DOS);
+		driver.findElement(By.id("fromDate")).sendKeys(DOSFrom.split("/")[0]+DOSFrom.split("/")[1]+DOSFrom.split("/")[2]);
+		logger.info("DOS From entered as: "+ DOSFrom);
 	}
 			
 	try {		bcbs.serviceDateend.clear();
-			bcbs.serviceDateend.sendKeys(DOS.split("/")[0]+DOS.split("/")[1]+DOS.split("/")[2]);
+			bcbs.serviceDateend.sendKeys(DOSTo.split("/")[0]+DOSTo.split("/")[1]+DOSTo.split("/")[2]);
 		//	bcbs.serviceDateend.sendKeys(Keys.ENTER);
-			logger.info("DOS entered as: "+ DOS);
+			logger.info("DOS To entered as: "+ DOSTo);
 	}catch(Exception e) {
 		driver.findElement(By.id("toDate")).clear();
-		driver.findElement(By.id("toDate")).sendKeys(DOS.split("/")[0]+DOS.split("/")[1]+DOS.split("/")[2]);
-		logger.info("DOS entered as: "+ DOS);
+		driver.findElement(By.id("toDate")).sendKeys(DOSTo.split("/")[0]+DOSTo.split("/")[1]+DOSTo.split("/")[2]);
+		logger.info("DOS To entered as: "+ DOSTo);
 	}	
 			
 		try {	bcbs.claimAmountInput.click();
@@ -530,12 +549,12 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			if(!payer.equals("HUMANA")) {
 			
 			try {
-				bcbs.waitFunc(bcbs.claimStatus(firstName, lastName, memberID,currency));
+				bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
 				}catch(Exception e) {
 					for(int i=0; i<5; i++) {
 						Thread.sleep(4000);
 					try {
-							bcbs.claimStatus(firstName, lastName, memberID,currency).isDisplayed();
+							bcbs.claimStatus(firstName, lastName,currency).isDisplayed();
 						break;
 					}catch(Exception e1) {}	
 				}
@@ -543,7 +562,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				}
 			
 		try {	
-			claimStatus= bcbs.claimStatus(firstName, lastName, memberID,currency).getText();
+			claimStatus= bcbs.claimStatus(firstName, lastName,currency).getText();
 			excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
 		}catch(Exception e) {
 			try {
@@ -626,7 +645,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			if((claimStatus.equals("FINALIZED")|| claimStatus.equals("PAID")) && !payer.equals("HUMANA") && (newInterface==false)) {
 				
 				try {
-				bcbs.claimStatus(firstName, lastName, memberID,currency).click();
+				bcbs.claimStatus(firstName, lastName,currency).click();
 				logger.info("Clicked on the claim status");
 				}catch(Exception e) {}
 				

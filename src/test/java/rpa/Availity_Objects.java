@@ -92,17 +92,12 @@ public class Availity_Objects {
 	@FindBy(id = "providerNpi")
 	public WebElement providerNpi;
 	
-	@FindBy(id = "claimSearchButton")
-	public WebElement claimSearchButton;
-	
-	@FindBy(xpath = "//span[text()='Claim']")
-	public WebElement claimTab;
 	
 	@FindBy(xpath = "//table[@id='claimsTable']/descendant::td[contains(text(),'ADAMS, ELLERY')]/following-sibling::td[text()='MIJ892008138']/preceding-sibling::td[4]/span")
 	public WebElement claimStatus;
 	
-	public WebElement claimStatus(String firstname, String lastname, String memberid, String balance) {
-		return driver.findElement(By.xpath("//table[@id='claimsTable']/descendant::td[contains(text(),'"+lastname.toUpperCase()+", "+firstname.toUpperCase()+"')]/following-sibling::td[text()='"+memberid.toUpperCase()+"']/following-sibling::td[text()='"+balance+"']/preceding-sibling::td/span"));
+	public WebElement claimStatus(String firstname, String lastname, String balance) {
+		return driver.findElement(By.xpath("//table[@id='claimsTable']/descendant::td[contains(text(),'"+lastname.toUpperCase()+", "+firstname.toUpperCase()+"')]/following-sibling::td[text()='"+balance+"']/preceding-sibling::td/span"));
 	}
 	//table[@id='claimsTable']/descendant::td[contains(text(),'BINGHAM, EMERSYN')]/following-sibling::td[text()='XYQ892408913']/following-sibling::td[text()='$1,248.97']/preceding-sibling::td[7]/span
 	@FindBy(id = "claimAmount")
@@ -132,6 +127,13 @@ public class Availity_Objects {
 	
 	@FindBy(id = "checkSearchButton")
 	public WebElement checkSearchButton;
+	
+	@FindBy(id = "claimSearchButton")
+	public WebElement claimSearchButton;
+	
+	@FindBy(xpath = "//span[text()='Claim']")
+	public WebElement claimTab;
+	
 	
 	@FindBy(xpath = "//a[text()='Results']")
 	public WebElement resultsTab;
