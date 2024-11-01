@@ -87,14 +87,14 @@ public class Availity_CPT_Level {
 		bcbs= new Availity_Objects(driver);
 		utility = new Utility();
 		
-		String[] params = new String[]{"url", "username", "password", "state","npi","excelName","excelNameBackup"};
+		String[] params = new String[]{"url", "username", "password", "state","excelName","excelNameBackup"};
 		HashMap<String, String> configs = utility.getConfig("config.xml", params);
 
 		String url = configs.get("url"), 
 				username = configs.get("username"), 
 				state = configs.get("state"),
 				password = configs.get("password");
-		NPI = configs.get("npi");
+		
 		excelFileName = configs.get("excelName");
 		String excelBackup = configs.get("excelNameBackup");
 		excel1 = new ExcelReader(System.getProperty("user.dir")+"\\"+excelBackup);
@@ -387,7 +387,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 	//		driver.switchTo().frame("newBodyFrame");
 			
 			bcbs.clearForm.click();
-			  
+			  String providerForNPI = data.get("Provider");
 			SimpleDateFormat parser = new SimpleDateFormat("M/dd/yy");
 			// output format: yyyy-MM-dd
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
@@ -437,7 +437,15 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				}
 			 ///////////////////////////////////////
 			
-			
+			if(providerForNPI.equals("IMS Experts, LLC")) {
+				NPI="1972697068";
+			}
+			else if(providerForNPI.equals("Health ROM")) {
+				NPI="1194307090";
+			}
+			else if(providerForNPI.equals("ROM Therapy")) {
+				NPI="1285380360";
+			}
 	
 		
 				npivalue= bcbs.providerNpi.getAttribute("value");
@@ -448,7 +456,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				else {
 					bcbs.providerNpi.sendKeys("");
 					bcbs.providerNpi.sendKeys(NPI);
-					logger.info("Entered NPI: "+ NPI);
+					logger.info("Entered NPI: "+ NPI +" for provider "+providerForNPI);
 				}
 			
 			

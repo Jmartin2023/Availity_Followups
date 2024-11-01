@@ -2,11 +2,10 @@
 <configurations>
 	<config>
 		<url>https://apps.availity.com/availity/web/public.elegant.login?p:lm=1695867051</url>
-<username>jmartin245</username>
-<password>Medcare$2025</password>
-<state>Michigan</state>
-<npi>BCBS MICHIGAN AND BLUE CARE NETWORK</npi>
-<excelName>BCBS MI - Availity Payer.xlsx</excelName>
-<excelNameBackup>Availity_Backup-Codes 1.xlsx</excelNameBackup>
+<username>JEllison042</username>
+<password>Google123@710</password>
+<state>Texas</state>
+<excelName>Availity Payer Batch - 11.xlsx</excelName>
+<excelNameBackup>Availity_Backup-Codes 11.xlsx</excelNameBackup>
 	</config>
 </configurations>
