@@ -791,6 +791,8 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				
 				
 				*/
+				 ((JavascriptExecutor) driver).executeScript("window.print();");
+				logger.info("Printed");
 				excel.setCellData(sheetName, "Check Number", rowNum, checkNum);
 				excel.setCellData(sheetName, "Claim Number", rowNum, claimNumAvaility);
 				excel.setCellData(sheetName, "Check Date", rowNum, checkDate);
