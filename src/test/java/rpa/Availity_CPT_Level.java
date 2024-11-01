@@ -274,6 +274,12 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 		//bcbs.michiganState.click();;
 		bcbs.getState(state).click();
 		logger.info("State enetered as"+ state);
+		Thread.sleep(4000);
+		try {
+			driver.findElement(By.xpath("//div[@class='vex-close aptr-engagement-close-btn px-close-button']")).click();
+		}catch(Exception e) {}
+		
+		
 		try {
 			driver.findElement(By.xpath("//button[@id='onetrust-accept-btn-handler']")).click();
 			logger.info("Clicked on accept cookies");
@@ -650,7 +656,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			
 			
 			logger.info(claimStatus);
-			if((claimStatus.equals("FINALIZED")|| claimStatus.equals("PAID")) && !payer.equals("HUMANA") && (newInterface==false)) {
+			if( !payer.equals("HUMANA") && (newInterface==false)) {
 				
 				try {
 				bcbs.claimStatus(firstName, lastName,currency).click();
@@ -810,8 +816,8 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			}
 			}
 			
-			
-	/*		if((claimStatus.equals("FINALIZED")|| claimStatus.equals("PAID")) &&(!checkNum.equals("N/A")|| checkNum.isBlank()|| checkNum.isEmpty()) ) {
+			/* uncommenting this part*/		
+			if( (!checkNum.equals("N/A")|| checkNum.isBlank()|| checkNum.isEmpty()) ) {
 				
 				bcbs.remittanceBtn.click();
 				logger.info("Clicked on remittance button");
@@ -954,7 +960,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				// else of if finalized and paid
 				excel.setCellData(sheetName, "EOB Downloaded", rowNum, "No");
 			}
-		*/	
+		
 			try {
 				driver.switchTo().frame("newBodyFrame");
 			}catch(Exception e) {}
@@ -968,12 +974,15 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 		}
 }
 	
+	
+	
+	/*
 	@Test(priority=3, dependsOnMethods="AvailityPortal") 
 	public void rowReset(){
 		rowNum=1;
 	}
 	
-	/*
+	
 	@Test(dataProvider= "getData",priority=4, dependsOnMethods={"rowReset","AvailityPortal"}) 
 	public void availityToMaximus(Hashtable<String,String> data) throws InterruptedException, ParseException, IOException {
 		rowNum++;
