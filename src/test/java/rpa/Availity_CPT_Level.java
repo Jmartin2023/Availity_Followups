@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -32,6 +33,8 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.ITestResult;
@@ -77,11 +80,28 @@ public class Availity_CPT_Level {
 
 	@BeforeTest
 	public void preRec() throws InterruptedException, SAXException, IOException, ParserConfigurationException {
+		 System.setProperty("webdriver.chrome.driver", "C:\\Users\\jmartin\\Desktop\\chromedriver 130\\chromedriver-win64\\chromedriver.exe");
+
+	        // Configure Chrome options for PDF printing
+	        ChromeOptions options = new ChromeOptions();
+	        options.addArguments("--headless");  // Run in headless mode for background processing
+	     
+	        // Set up print preferences for saving as PDF
+	        Map<String, Object> prefs = new HashMap<>();
+	        prefs.put("download.default_directory", System.getProperty("user.dir") + "\\DownloadedFiles");
+	        
+	        prefs.put("printing.print_preview_sticky_settings.appState",
+	                  "{\"recentDestinations\":[{\"id\":\"Save as PDF\",\"origin\":\"local\"}],\"selectedDestinationId\":\"Save as PDF\",\"version\":2}");
+	        options.setExperimentalOption("prefs", prefs);
+	        options.addArguments("--kiosk-printing");  // Auto-selects the "Save as PDF" option
+
+	        // Initialize WebDriver with ChromeOptions
+	         driver = new ChromeDriver(options);
 
 	
-		sel = new SeleniumUtils(projDirPath);
+	sel = new SeleniumUtils(projDirPath);
 
-		driver = sel.getDriver();
+	//	driver = sel.getDriver();
 
 		//js = (JavascriptExecutor) driver;
 		bcbs= new Availity_Objects(driver);
@@ -367,8 +387,8 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				throw new SkipException("Skipping this exception, Payer not found");
 			
 			}
-			originalTab  = driver.getWindowHandle();
-			System.out.println(driver.getWindowHandle());
+	//		originalTab  = driver.getWindowHandle();
+		//	System.out.println(driver.getWindowHandle());
 			//driver.findElement(By.id("payer")).sendKeys(payer+Keys.ENTER);
 			//logger.info("Payer selected as "+payer);
 			try {
@@ -791,6 +811,32 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				
 				
 				*/
+			
+			 try {
+		           
+
+		            // Print to PDF (requires DevTools Protocol Command)
+		            Map<String, Object> printOptions = new HashMap<>();
+		            printOptions.put("paperWidth", 8.5);  // Set width in inches
+		            printOptions.put("paperHeight", 11);  // Set height in inches
+		            printOptions.put("printBackground", true);  // Include background graphics
+
+		            // Execute the command and get the result
+		            Map<String, Object> result = ((ChromeDriver) driver)
+		                    .executeCdpCommand("Page.printToPDF", printOptions);
+
+		            // Extract the base64 PDF string from the result
+		            String base64PDF = (String) result.get("data");
+
+		            // Save the PDF from base64 to a file
+		            byte[] decoded = java.util.Base64.getDecoder().decode(base64PDF);
+		            java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("user.dir") + "\\DownloadedFiles\\"+firstName+"-"+lastName+".pdf"), decoded);
+
+		            System.out.println("PDF saved as firstName.pdf");
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
+			 
 				excel.setCellData(sheetName, "Check Number", rowNum, checkNum);
 				excel.setCellData(sheetName, "Claim Number", rowNum, claimNumAvaility);
 				excel.setCellData(sheetName, "Check Date", rowNum, checkDate);
@@ -816,7 +862,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			}
 			}
 			
-			/* uncommenting this part*/		
+			/* uncommenting this part	
 			if( (!checkNum.equals("N/A")|| checkNum.isBlank()|| checkNum.isEmpty()) ) {
 				
 				bcbs.remittanceBtn.click();
@@ -960,7 +1006,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				// else of if finalized and paid
 				excel.setCellData(sheetName, "EOB Downloaded", rowNum, "No");
 			}
-		
+		*/	
 			try {
 				driver.switchTo().frame("newBodyFrame");
 			}catch(Exception e) {}
@@ -1092,7 +1138,7 @@ finalizedDate = data.get("Finalized Date").replace("/", "-");
 			String error = result.getThrowable().getLocalizedMessage();
 			logger.info(error);
 			//result.getThrowable().printStackTrace();
-			try {
+		/*	try {
 				TakesScreenshot ts = (TakesScreenshot) driver;
 				File ss = ts.getScreenshotAs(OutputType.FILE);
 				String ssPath = "./Screenshots/" + result.getName() + " - " + rowNum + ".png";
@@ -1100,7 +1146,7 @@ finalizedDate = data.get("Finalized Date").replace("/", "-");
 			} catch (Exception e) {
 				System.out.println("Error taking screenshot");
 			}
-
+*/
 		}
 		else {
 			logger.info("Test completed successfully");
