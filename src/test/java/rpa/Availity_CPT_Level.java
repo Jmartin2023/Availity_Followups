@@ -80,7 +80,7 @@ public class Availity_CPT_Level {
 
 	@BeforeTest
 	public void preRec() throws InterruptedException, SAXException, IOException, ParserConfigurationException {
-		 System.setProperty("webdriver.chrome.driver", "C:\\Users\\jmartin\\Desktop\\chromedriver 130\\chromedriver-win64\\chromedriver.exe");
+		 System.setProperty("webdriver.chrome.driver",System.getProperty("user.dir")+ "\\chromedriver.exe");
 
 	        // Configure Chrome options for PDF printing
 	        ChromeOptions options = new ChromeOptions();
