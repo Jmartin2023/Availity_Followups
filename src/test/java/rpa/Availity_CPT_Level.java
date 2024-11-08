@@ -466,7 +466,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			if(providerForNPI.equals("IMS Experts, LLC")) {
 				NPI="1972697068";
 			}
-			else if(providerForNPI.equals("HEALTHROM INC")) {
+			else if(providerForNPI.equals("Health ROM")) {
 				NPI="1194307090";
 			}
 			else if(providerForNPI.equals("ROM Therapy")) {
