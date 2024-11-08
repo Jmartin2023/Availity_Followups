@@ -509,7 +509,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			logger.info("DOB entered as: "+ dateofbirth);
 			
 			
-			try {
+			/*		try {
 				driver.findElement(By.id("subscriberLastName")).sendKeys(lastName);
 			}catch(Exception e) {
 				
@@ -520,6 +520,12 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			}catch(Exception e) {
 				
 			}
+			*/
+			
+			try {
+				driver.findElement(By.xpath("//input[contains(@id,'patientIsSubscriber')]")).click();
+				logger.info("Clicked on check box Subscriber is same as patient");
+			}catch(Exception e) {}
 	try {	
 			bcbs.serviceDatestart.clear();
 			bcbs.serviceDatestart.sendKeys(DOSFrom.split("/")[0]+DOSFrom.split("/")[1]+DOSFrom.split("/")[2]);
