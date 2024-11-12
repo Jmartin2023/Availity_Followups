@@ -173,11 +173,14 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 		
 		Thread.sleep(5000);
 		try {
+			Thread.sleep(2000);
+			logger.info("waiting for My account in try");
 		bcbs.waitFunc(driver.findElement(By.xpath("//div[@class='container-fluid']//a[contains(@title,'Account')]")));
 		driver.findElement(By.xpath("//div[@class='container-fluid']//a[contains(@title,'Account')]")).click();
 		logger.info("Clicked on user's account");
 		}catch(Exception e) {
-			
+			Thread.sleep(2000);
+			logger.info("waiting for My account in catch");
 				for(int i=0; i<5; i++) {
 					Thread.sleep(4000);
 				try{ 
