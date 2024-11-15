@@ -86,7 +86,7 @@ public class Availity_CPT_Level {
 
 	        // Configure Chrome options for PDF printing
 	        ChromeOptions options = new ChromeOptions();
-	    //    options.addArguments("--headless");  // Run in headless mode for background processing
+	        options.addArguments("--headless");  // Run in headless mode for background processing
 	     
 	        // Set up print preferences for saving as PDF
 	        Map<String, Object> prefs = new HashMap<>();
@@ -596,7 +596,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			if(!payer.equals("HUMANA")) {
 			
 			try {
-				 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimStatus(firstName, lastName,currency)));
+				
 				bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
 				}catch(Exception e) {
 					for(int i=0; i<5; i++) {
@@ -637,8 +637,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				
 				
 				try {
-					 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimStatus(firstName, lastName,currency)));
-					bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
+						bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
 					}catch(Exception e) {
 						for(int i=0; i<5; i++) {
 							Thread.sleep(4000);
@@ -759,8 +758,24 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			if( !payer.equals("HUMANA") && (newInterface==false)) {
 				
 				try {
-					 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimStatus(firstName, lastName,currency)));
-						
+					
+					
+					
+						 try {
+						 
+						bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
+						}catch(Exception e) {
+							for(int i=0; i<5; i++) {
+								Thread.sleep(4000);
+							try {
+									bcbs.claimStatus(firstName, lastName,currency).isDisplayed();
+								break;
+							}catch(Exception e1) {}	
+						}
+							
+						}
+					
+					 
 				bcbs.claimStatus(firstName, lastName,currency).click();
 				logger.info("Clicked on the claim status");
 				}catch(Exception e) {}
@@ -768,6 +783,22 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			
 				//Paid = Finalized
 				 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimNumber));
+				 
+				 try {
+					 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimNumber));
+					bcbs.waitFunc(bcbs.claimNumber);
+					}catch(Exception e) {
+						for(int i=0; i<5; i++) {
+							Thread.sleep(4000);
+						try {
+							bcbs.claimNumber.isDisplayed();
+							break;
+						}catch(Exception e1) {}	
+					}
+						
+					}
+				
+				 
 					
 				claimNumAvaility= 	bcbs.claimNumber.getText();
 				logger.info("Claim number in availity app is "+ claimNumAvaility);
@@ -777,7 +808,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				
 				
 				 try {
-			           
+			          
 
 			            // Print to PDF (requires DevTools Protocol Command)
 			            Map<String, Object> printOptions = new HashMap<>();
