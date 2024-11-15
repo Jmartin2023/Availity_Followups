@@ -35,7 +35,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestResult;
 import org.testng.SkipException;
@@ -84,7 +86,7 @@ public class Availity_CPT_Level {
 
 	        // Configure Chrome options for PDF printing
 	        ChromeOptions options = new ChromeOptions();
-	        options.addArguments("--headless");  // Run in headless mode for background processing
+	    //    options.addArguments("--headless");  // Run in headless mode for background processing
 	     
 	        // Set up print preferences for saving as PDF
 	        Map<String, Object> prefs = new HashMap<>();
@@ -346,7 +348,9 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 		skipFlag=false;
 		boolean newInterface = false;
 		status = data.get("Bot Status");
-		
+		 WebDriverWait waitExplicit = new WebDriverWait(driver, Duration.ofSeconds(50));
+			
+	
 		if(status.isBlank() || status.isBlank()) {
 			
 			
@@ -588,34 +592,11 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			driver.switchTo().defaultContent();
 			driver.switchTo().frame("newBody");
 			
-			 try {
-		           
-
-		            // Print to PDF (requires DevTools Protocol Command)
-		            Map<String, Object> printOptions = new HashMap<>();
-		            printOptions.put("paperWidth", 8.5);  // Set width in inches
-		            printOptions.put("paperHeight", 11);  // Set height in inches
-		            printOptions.put("printBackground", true);  // Include background graphics
-
-		            // Execute the command and get the result
-		            Map<String, Object> result = ((ChromeDriver) driver)
-		                    .executeCdpCommand("Page.printToPDF", printOptions);
-
-		            // Extract the base64 PDF string from the result
-		            String base64PDF = (String) result.get("data");
-
-		            // Save the PDF from base64 to a file
-		            byte[] decoded = java.util.Base64.getDecoder().decode(base64PDF);
-		            java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("user.dir") + "\\DownloadedFiles\\"+firstName+"-"+lastName+".pdf"), decoded);
-
-		            System.out.println("PDF saved as firstName.pdf");
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		        }
-		
+			
 			if(!payer.equals("HUMANA")) {
 			
 			try {
+				 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimStatus(firstName, lastName,currency)));
 				bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
 				}catch(Exception e) {
 					for(int i=0; i<5; i++) {
@@ -645,16 +626,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				
 			}catch(Exception e1) {
 			
-				try {
-					
-					driver.findElements(By.xpath("//table[@id='claimsTable']/descendant::td[contains(text(),'LOUDY, JESSICA')]/following-sibling::td/following-sibling::td[text()='$264.86']/preceding-sibling::td/span")).get(0).click();
-					claimStatus=	driver.findElements(By.xpath("//table[@id='claimsTable']/descendant::td[contains(text(),'LOUDY, JESSICA')]/following-sibling::td/following-sibling::td[text()='$264.86']/preceding-sibling::td/span")).get(0).getText();
-					
-					
-				}catch(Exception e2) {
-					excel.setCellData(sheetName, "Bot Status", rowNum, "member Id, name or charge mismatch");
-					throw new SkipException("Skipping this exception, member Id, name or charge mismatch");
-				}
+			
 				
 				
 			}
@@ -662,7 +634,10 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 		}
 		
 			}else if (payer.equals("HUMANA")){
+				
+				
 				try {
+					 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimStatus(firstName, lastName,currency)));
 					bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
 					}catch(Exception e) {
 						for(int i=0; i<5; i++) {
@@ -676,6 +651,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 					}
 				
 			try {	
+				
 				claimStatus= bcbs.claimStatus(firstName, lastName,currency).getText();
 				excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
 			}catch(Exception e) {}
@@ -683,26 +659,55 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			try {
 				bcbs.claimStatus(firstName, lastName,currency).click();
 				logger.info("Clicked on the claim status");
-				}catch(Exception e) {}
+			}catch(Exception e2) {
+				excel.setCellData(sheetName, "Bot Status", rowNum, "name or charge mismatch");
+				throw new SkipException("Skipping this exception,  name or charge mismatch");
+			}
 				
-				try {
-					bcbs.waitFunc(bcbs.claimNumber);
-					}catch(Exception e) {
-						for(int i=0; i<5; i++) {
-							Thread.sleep(4000);
-						try { if(bcbs.claimNumber.isDisplayed()) {
-							break;
-						}
-						}catch(Exception e1) {}
-					}
-					}
 			
-			
-			
-				try {
+		
+			try {
 				claimNumAvaility = driver.findElement(By.xpath("//div[@id='Claim Number']/p[2]")).getText();
 				logger.info("Claim number in availity app is "+ claimNumAvaility);
-				}catch(Exception e) {}
+				}catch(Exception e) {
+					for(int i=0; i<5; i++) {
+						Thread.sleep(4000);
+					try {
+						claimNumAvaility = driver.findElement(By.xpath("//div[@id='Claim Number']/p[2]")).getText();
+						logger.info("Claim number in availity app is "+ claimNumAvaility);
+						break;
+					}catch(Exception e1) {}	
+				}
+					
+				}
+			
+			
+				
+				
+				 try {
+			           
+
+			            // Print to PDF (requires DevTools Protocol Command)
+			            Map<String, Object> printOptions = new HashMap<>();
+			            printOptions.put("paperWidth", 8.5);  // Set width in inches
+			            printOptions.put("paperHeight", 11);  // Set height in inches
+			            printOptions.put("printBackground", true);  // Include background graphics
+
+			            // Execute the command and get the result
+			            Map<String, Object> result = ((ChromeDriver) driver)
+			                    .executeCdpCommand("Page.printToPDF", printOptions);
+
+			            // Extract the base64 PDF string from the result
+			            String base64PDF = (String) result.get("data");
+
+			            // Save the PDF from base64 to a file
+			            byte[] decoded = java.util.Base64.getDecoder().decode(base64PDF);
+			            java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("user.dir") + "\\DownloadedFiles\\"+firstName+"-"+lastName+".pdf"), decoded);
+
+			            System.out.println("PDF saved as firstName.pdf");
+			        } catch (Exception e) {
+			            e.printStackTrace();
+			        }
 				
 				try {
 				AvailityDOS = driver.findElement(By.xpath("//div[@id='Service Dates']/p[2]")).getText();
@@ -736,18 +741,16 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				logger.info("Check number is: "+checkNum);
 				}catch(Exception e) {}
 				
-				if(checkNum.isBlank()||checkNum.isEmpty() || checkNum.equals("N/A")) {
-					excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
-					excel.setCellData(sheetName, "Bot Status", rowNum, "Pass");
-					excel.setCellData(sheetName, "Check Number", rowNum, "0000000");
-					checkNum="0000000";
-					driver.navigate().back();
-
-					throw new SkipException("Skipping this exception, Check number is null");
-				
-				}else {
-				
-				}
+				excel.setCellData(sheetName, "Check Number", rowNum, checkNum);
+				excel.setCellData(sheetName, "Claim Number", rowNum, claimNumAvaility);
+				excel.setCellData(sheetName, "Check Date", rowNum, checkDate);
+				excel.setCellData(sheetName, "Payment Date", rowNum, paymentDate);
+				excel.setCellData(sheetName, "Received Date", rowNum, receivedDate);
+				excel.setCellData(sheetName, "Paid Amount", rowNum, paidAmount);
+				excel.setCellData(sheetName, "Claim Number", rowNum, claimNumAvaility);
+				excel.setCellData(sheetName, "DOS", rowNum, AvailityDOS);
+				excel.setCellData(sheetName, "Denial Reason", rowNum, denialReason);
+			excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
 			}
 			
 			
@@ -756,27 +759,49 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			if( !payer.equals("HUMANA") && (newInterface==false)) {
 				
 				try {
+					 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimStatus(firstName, lastName,currency)));
+						
 				bcbs.claimStatus(firstName, lastName,currency).click();
 				logger.info("Clicked on the claim status");
 				}catch(Exception e) {}
-				
-				try {
-					bcbs.waitFunc(bcbs.claimNumber);
-					}catch(Exception e) {
-						for(int i=0; i<5; i++) {
-							Thread.sleep(4000);
-						try { if(bcbs.claimNumber.isDisplayed()) {
-							break;
-						}
-						}catch(Exception e1) {}
-					}
-					}
+			
+			
 				//Paid = Finalized
+				 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimNumber));
+					
 				claimNumAvaility= 	bcbs.claimNumber.getText();
 				logger.info("Claim number in availity app is "+ claimNumAvaility);
 				try {
 				checkNum = driver.findElement(By.xpath("//div[@id='Check Number']/p[2]")).getText(); //new change
 				}catch(Exception e) {}
+				
+				
+				 try {
+			           
+
+			            // Print to PDF (requires DevTools Protocol Command)
+			            Map<String, Object> printOptions = new HashMap<>();
+			            printOptions.put("paperWidth", 8.5);  // Set width in inches
+			            printOptions.put("paperHeight", 11);  // Set height in inches
+			            printOptions.put("printBackground", true);  // Include background graphics
+
+			            // Execute the command and get the result
+			            Map<String, Object> result = ((ChromeDriver) driver)
+			                    .executeCdpCommand("Page.printToPDF", printOptions);
+
+			            // Extract the base64 PDF string from the result
+			            String base64PDF = (String) result.get("data");
+
+			            // Save the PDF from base64 to a file
+			            byte[] decoded = java.util.Base64.getDecoder().decode(base64PDF);
+			            java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("user.dir") + "\\DownloadedFiles\\"+firstName+"-"+lastName+".pdf"), decoded);
+
+			            System.out.println("PDF saved as firstName.pdf");
+			        } catch (Exception e) {
+			            e.printStackTrace();
+			        }
+				
+				
 				try {
 				checkDate= driver.findElement(By.xpath("//div[@id='Check Date']/p[2]")).getText(); //new change
 				}catch(Exception e) {}
@@ -901,19 +926,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				excel.setCellData(sheetName, "DOS", rowNum, AvailityDOS);
 				excel.setCellData(sheetName, "Denial Reason", rowNum, denialReason);
 			excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
-			if(checkNum.isBlank()||checkNum.isEmpty()) {
-				excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
-				excel.setCellData(sheetName, "Bot Status", rowNum, "Pass");
-				excel.setCellData(sheetName, "Check Number", rowNum, "0000000");
-				excel.setCellData(sheetName, "EOB Downloaded", rowNum, "No");
-				checkNum="0000000";
-				bcbs.waitFunc(bcbs.resultsTab);
-				bcbs.resultsTab.click();
-				logger.info("Clicked on results");
-
-				throw new SkipException("Skipping this exception, Check number is null");
 			
-			}
 			}
 			
 			/* uncommenting this part	
