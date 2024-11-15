@@ -593,9 +593,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			driver.switchTo().frame("newBody");
 			
 			
-			if(!payer.equals("HUMANA")) {
-			
-			try {
+try {
 				
 				bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
 				}catch(Exception e) {
@@ -613,57 +611,24 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			claimStatus= bcbs.claimStatus(firstName, lastName,currency).getText();
 			excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
 		}catch(Exception e) {
-			try {
-				
-				driver.findElements(By.xpath("//span[text()='Billed']/parent::span/parent::div/following-sibling::div/span[text()='"+currency+"']")).get(0).click();
-				logger.info("Clicked on first claim with currency match");
-			Thread.sleep(1000);
-				claimStatus = driver.findElements(By.xpath("//span[text()='Billed']/parent::span/parent::div/following-sibling::div/span[text()='"+currency+"']/parent::div/parent::div/preceding-sibling::div/div/span/span[text()='Status']/parent::span/parent::div/following-sibling::div/span")).get(0).getText();
 			
-				newInterface = driver.findElement(By.xpath("//span[text()='Member ID']/parent::span/parent::div/following-sibling::div/span[text()='"+memberID+"']")).isDisplayed();
-			
-				checkNum= driver.findElement(By.xpath("//span[text()='Check Number']/parent::span/parent::div/following-sibling::div/span")).getText();
-				
-			}catch(Exception e1) {
-			
-			
-				
-				
-			}
-			
+			excel.setCellData(sheetName, "Bot Status", rowNum, "name or charge mismatch");
+			throw new SkipException("Skipping this exception,  name or charge mismatch");
 		}
 		
-			}else if (payer.equals("HUMANA")){
-				
-				
-				try {
-						bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
-					}catch(Exception e) {
-						for(int i=0; i<5; i++) {
-							Thread.sleep(4000);
-						try {
-								bcbs.claimStatus(firstName, lastName,currency).isDisplayed();
-							break;
-						}catch(Exception e1) {}	
-					}
-						
-					}
-				
-			try {	
-				
-				claimStatus= bcbs.claimStatus(firstName, lastName,currency).getText();
-				excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
-			}catch(Exception e) {}
+		try {
+			bcbs.claimStatus(firstName, lastName,currency).click();
+			logger.info("Clicked on the claim status");
+		}catch(Exception e2) {
+			excel.setCellData(sheetName, "Bot Status", rowNum, "name or charge mismatch");
+			throw new SkipException("Skipping this exception,  name or charge mismatch");
+		}
+		
 			
-			try {
-				bcbs.claimStatus(firstName, lastName,currency).click();
-				logger.info("Clicked on the claim status");
-			}catch(Exception e2) {
-				excel.setCellData(sheetName, "Bot Status", rowNum, "name or charge mismatch");
-				throw new SkipException("Skipping this exception,  name or charge mismatch");
-			}
+			if (payer.equals("HUMANA")){
 				
-			
+				
+					
 		
 			try {
 				claimNumAvaility = driver.findElement(By.xpath("//div[@id='Claim Number']/p[2]")).getText();
@@ -757,29 +722,6 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			logger.info(claimStatus);
 			if( !payer.equals("HUMANA") && (newInterface==false)) {
 				
-				try {
-					
-					
-					
-						 try {
-						 
-						bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
-						}catch(Exception e) {
-							for(int i=0; i<5; i++) {
-								Thread.sleep(4000);
-							try {
-									bcbs.claimStatus(firstName, lastName,currency).isDisplayed();
-								break;
-							}catch(Exception e1) {}	
-						}
-							
-						}
-					
-					 
-				bcbs.claimStatus(firstName, lastName,currency).click();
-				logger.info("Clicked on the claim status");
-				}catch(Exception e) {}
-			
 			
 				//Paid = Finalized
 				 waitExplicit.until(ExpectedConditions.visibilityOf(bcbs.claimNumber));
