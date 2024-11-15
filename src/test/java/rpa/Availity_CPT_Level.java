@@ -588,6 +588,30 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 			driver.switchTo().defaultContent();
 			driver.switchTo().frame("newBody");
 			
+			 try {
+		           
+
+		            // Print to PDF (requires DevTools Protocol Command)
+		            Map<String, Object> printOptions = new HashMap<>();
+		            printOptions.put("paperWidth", 8.5);  // Set width in inches
+		            printOptions.put("paperHeight", 11);  // Set height in inches
+		            printOptions.put("printBackground", true);  // Include background graphics
+
+		            // Execute the command and get the result
+		            Map<String, Object> result = ((ChromeDriver) driver)
+		                    .executeCdpCommand("Page.printToPDF", printOptions);
+
+		            // Extract the base64 PDF string from the result
+		            String base64PDF = (String) result.get("data");
+
+		            // Save the PDF from base64 to a file
+		            byte[] decoded = java.util.Base64.getDecoder().decode(base64PDF);
+		            java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("user.dir") + "\\DownloadedFiles\\"+firstName+"-"+lastName+".pdf"), decoded);
+
+		            System.out.println("PDF saved as firstName.pdf");
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		        }
 		
 			if(!payer.equals("HUMANA")) {
 			
@@ -638,35 +662,79 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 		}
 		
 			}else if (payer.equals("HUMANA")){
+				try {
+					bcbs.waitFunc(bcbs.claimStatus(firstName, lastName,currency));
+					}catch(Exception e) {
+						for(int i=0; i<5; i++) {
+							Thread.sleep(4000);
+						try {
+								bcbs.claimStatus(firstName, lastName,currency).isDisplayed();
+							break;
+						}catch(Exception e1) {}	
+					}
+						
+					}
 				
-				
-				claimNumAvaility = driver.findElement(By.xpath("//div[@data-testid='results-header']//span[contains(text(),'Claim')]")).getText().split("Claim ")[1];
-				logger.info("Claim number in availity app is "+ claimNumAvaility);
-				
-				AvailityDOS = driver.findElement(By.xpath("//div[@data-testid='results-header']//span[contains(text(),'Dates of Service')]/parent::span/parent::div/following-sibling::div/span")).getText();
-				logger.info("Availity DOS  in availity app is "+ AvailityDOS);
-
+			try {	
+				claimStatus= bcbs.claimStatus(firstName, lastName,currency).getText();
+				excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
+			}catch(Exception e) {}
 			
-				paidAmount = driver.findElement(By.xpath("//div[@data-testid='results-header']//span[contains(text(),'Paid')]/parent::span/parent::div/following-sibling::div/span")).getText();
+			try {
+				bcbs.claimStatus(firstName, lastName,currency).click();
+				logger.info("Clicked on the claim status");
+				}catch(Exception e) {}
+				
+				try {
+					bcbs.waitFunc(bcbs.claimNumber);
+					}catch(Exception e) {
+						for(int i=0; i<5; i++) {
+							Thread.sleep(4000);
+						try { if(bcbs.claimNumber.isDisplayed()) {
+							break;
+						}
+						}catch(Exception e1) {}
+					}
+					}
+			
+			
+			
+				try {
+				claimNumAvaility = driver.findElement(By.xpath("//div[@id='Claim Number']/p[2]")).getText();
+				logger.info("Claim number in availity app is "+ claimNumAvaility);
+				}catch(Exception e) {}
+				
+				try {
+				AvailityDOS = driver.findElement(By.xpath("//div[@id='Service Dates']/p[2]")).getText();
+				logger.info("Availity DOS  in availity app is "+ AvailityDOS);
+				}catch(Exception e) {}
+			
+				try {
+				paidAmount = driver.findElement(By.xpath("//div[@id='Paid Amount']/p[2]")).getText();
 		
 				logger.info("Paid amount is "+ paidAmount);
+				}catch(Exception e) {}
 				
-				claimStatus = driver.findElement(By.xpath("//div[@data-testid='results-header']//span[contains(text(),'Status')]/parent::span/parent::div/following-sibling::div/span")).getText();
+				try {
+				claimStatus = driver.findElement(By.xpath("//div[@id='Claim Status']/p[2]")).getText();
 				
 				
 				logger.info(claimStatus);
+				}catch(Exception e) {}
 				
-				
+				try {
 				processedDate = driver.findElement(By.xpath("//div[@data-testid='results-header']//span[contains(text(),'Processed Date')]/parent::span/parent::div/following-sibling::div/span")).getText();
-				
-				
 				logger.info("Processed Date is: "+ processedDate);
+				}catch(Exception e) {}
 				
-				
-				checkDate = driver.findElement(By.xpath("//div[@data-testid='resultsSummary']//span[contains(text(),'Check Date')]/parent::span/parent::div/following-sibling::div/span")).getText();
+				try {
+				checkDate = driver.findElement(By.xpath("//div[@id='Check Date']/p[2]")).getText();
 				logger.info("Check date is: "+checkDate);
-				checkNum = driver.findElement(By.xpath("//div[@data-testid='resultsSummary']//span[contains(text(),'Check Number')]/parent::span/parent::div/following-sibling::div/span")).getText();
+				}catch(Exception e) {}
+				try {
+				checkNum = driver.findElement(By.xpath("//div[@id='Check Number']/p[2]")).getText();
 				logger.info("Check number is: "+checkNum);
+				}catch(Exception e) {}
 				
 				if(checkNum.isBlank()||checkNum.isEmpty() || checkNum.equals("N/A")) {
 					excel.setCellData(sheetName, "Claim Status", rowNum, claimStatus);
@@ -821,30 +889,7 @@ String usedCode = excel1.getCellData(sheetName, "Used Code", 2);
 				
 				*/
 			
-			 try {
-		           
-
-		            // Print to PDF (requires DevTools Protocol Command)
-		            Map<String, Object> printOptions = new HashMap<>();
-		            printOptions.put("paperWidth", 8.5);  // Set width in inches
-		            printOptions.put("paperHeight", 11);  // Set height in inches
-		            printOptions.put("printBackground", true);  // Include background graphics
-
-		            // Execute the command and get the result
-		            Map<String, Object> result = ((ChromeDriver) driver)
-		                    .executeCdpCommand("Page.printToPDF", printOptions);
-
-		            // Extract the base64 PDF string from the result
-		            String base64PDF = (String) result.get("data");
-
-		            // Save the PDF from base64 to a file
-		            byte[] decoded = java.util.Base64.getDecoder().decode(base64PDF);
-		            java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("user.dir") + "\\DownloadedFiles\\"+firstName+"-"+lastName+".pdf"), decoded);
-
-		            System.out.println("PDF saved as firstName.pdf");
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		        }
+			
 			 
 				excel.setCellData(sheetName, "Check Number", rowNum, checkNum);
 				excel.setCellData(sheetName, "Claim Number", rowNum, claimNumAvaility);
