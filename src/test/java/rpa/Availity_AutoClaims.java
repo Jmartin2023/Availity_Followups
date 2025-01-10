@@ -42,7 +42,7 @@ import org.testng.annotations.Test;
 import objects.ExcelOperations;
 import objects.SeleniumUtils;
 import objects.Utility;
-import utilities.ExcelReader;
+import objects.ExcelReader;
 
 
 
@@ -74,7 +74,7 @@ public class Availity_AutoClaims {
 	@BeforeTest
 	public void preRec() throws Exception {
 			 ExcelDownloader downloader = new ExcelDownloader();
-			downloader.downloadExcel();
+	/*		downloader.downloadExcel();
 			
 			ExcelReader excel = new ExcelReader("Availity Report.xlsx");
 			if(excel.getCellData(sheetName, 1, 1).isEmpty()){
@@ -82,7 +82,7 @@ public class Availity_AutoClaims {
 			}
 			
 			excel.renameSheet(0,"Sheet1");
-			ExcelDownloader.addHeaders("Availity Report.xlsx", 21);
+			ExcelDownloader.addHeaders("Availity Report.xlsx", 21); */
 			npiAndAddress = downloader.getNPIandStateofPractice();
 			String state = downloader.extractStateAcronym(npiAndAddress.get(0));
 			System.out.println(state);
@@ -92,9 +92,9 @@ public class Availity_AutoClaims {
 		int rowOfState = excel2.getCellRowNum(sheetName, "State Acronym", state);
 		state = excel2.getCellData(sheetName, "State Name", rowOfState);
 		
-		downloader.performVLookup("Availity Report.xlsx","AV VS MAXIMUS.xlsx");
-		downloader.divideExcel("Availity Report.xlsx");
-		excel =  new ExcelReader(System.getProperty("user.dir")+"\\Availity 1.xlsx");
+	//	downloader.performVLookup("Availity Report.xlsx","AV VS MAXIMUS.xlsx");
+	//	downloader.divideExcel("Availity Report.xlsx");
+		//excel =  new ExcelReader(System.getProperty("user.dir")+"\\Availity 1.xlsx");
 		
 		driver = sel.getDriver();
 
@@ -108,7 +108,7 @@ public class Availity_AutoClaims {
 				String url = configs.get("url"), 
 				username = configs.get("username"), 	
 				password = configs.get("password");
-				excelFileName = "Availity 1.xlsx";
+				excelFileName = configs.get("excelName");
 				
 		System.out.println(excelFileName);
 
